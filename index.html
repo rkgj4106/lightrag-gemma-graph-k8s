@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Gemma + LightRAG Lab</title>
+<style>
+body{font:16px system-ui,sans-serif;max-width:1000px;margin:40px auto;padding:0 20px;background:#f5f7fa;color:#162137}
+h1{font-size:28px}
+textarea{width:100%;box-sizing:border-box;padding:14px;font:inherit;border:1px solid #bac4d2;border-radius:10px}
+button,select{font:inherit;padding:10px;margin:8px 8px 8px 0}
+button{cursor:pointer}
+pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;border:1px solid #d7dce5;padding:18px;border-radius:10px}
+summary{cursor:pointer}
+#samples button{display:block;text-align:left;font-size:14px}
+label{white-space:nowrap}
+</style>
+
+<h1>Gemma 3 12B + LightRAG</h1>
+<p>
+Compare vector search and graph search using the same question.
+First, run <code>python app.py ingest</code> in your terminal.
+</p>
+
+<details>
+  <summary>5 Test Questions</summary>
+  <div id="samples"></div>
+</details>
+
+<textarea id="q" rows="3">Who supplies the system used by the project led by Kim Min-su, and who is that supplier's technical support contact?</textarea>
+
+<select id="mode">
+  <option value="mix">mix: Graph + Document Vectors</option>
+  <option value="naive">naive: Document Vectors</option>
+  <option value="hybrid">hybrid: Entities + Relationships</option>
+  <option value="local">local: Entity-Focused</option>
+  <option value="global">global: Relationship-Focused</option>
+</select>
+
+<label>
+  <input id="context" type="checkbox">
+  Show Retrieved Context Only
+</label>
+<br>
+
+<button id="run">Ask Question</button>
+<button id="compare">Compare naive / hybrid / mix</button>
+
+<p id="status" role="status"></p>
+<div id="answers"></div>
+
+<section aria-label="Knowledge Graph">
+  <h2>Knowledge Graph</h2>
+  <p>
+    Circles represent entities, and lines represent extracted relationships.
+    Click a node or relationship line to view its description and sources.
+  </p>
+
+  <button id="graph">Load Graph</button>
+  <button id="fit">Fit to View</button>
+  <button id="zoomIn" aria-label="Zoom in on the graph">Zoom In +</button>
+  <button id="zoomOut" aria-label="Zoom out of the graph">Zoom Out −</button>
+
+  <input
+    id="graphSearch"
+    placeholder="Search entities (e.g., Kim Min-su)"
+    aria-label="Search by entity name"
+    style="font:inherit;padding:10px;max-width:260px"
+  >
+
+  <p id="graphStatus" role="status">
+    Load the graph after indexing is complete.
+  </p>
+
+  <div
+    id="legend"
+    style="display:flex;flex-wrap:wrap;gap:12px;margin:12px 0"
+  ></div>
+
+  <svg
+    id="network"
+    viewBox="0 0 1000 620"
+    role="group"
+    aria-label="Extracted Knowledge Graph"
+    style="width:100%;height:620px;max-height:70vh;background:white;border:1px solid #cbd5e1;border-radius:12px;touch-action:none;user-select:none"
+  ></svg>
+
+  <pre id="graphDetails" aria-live="polite">Mouse wheel: Zoom / Empty space: Drag to pan / Node: Drag to reposition / Click: View details</pre>
+
+  <details>
+    <summary>Entity and Relationship Text List</summary>
+    <pre id="graphout">Available after indexing.</pre>
+  </details>
+</section>
+
+<script>
+const $ = id => document.getElementById(id);
+
+async function request(url, options) {
+  const r = await fetch(url, options);
+  const j = await r.json();
+  if (!r.ok) throw Error(j.detail || r.statusText);
+  return j;
+}
+
+async function run(modes) {
+  $('answers').replaceChildren();
+  $('run').disabled = $('compare').disabled = true;
+  $('status').textContent =
+    'Retrieving information and generating an answer. The first run may take longer while the model loads.';
+
+  try {
+    for (const mode of modes) {
+      const data = await request('/api/ask', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          question: $('q').value,
+          mode,
+          context_only: $('context').checked
+        })
+      });
+
+      const title = document.createElement('h3');
+      title.textContent = `${mode} · ${data.seconds} seconds`;
+
+      const pre = document.createElement('pre');
+      pre.textContent = typeof data.result === 'string'
+        ? data.result
+        : JSON.stringify(data.result, null, 2);
+
+      $('answers').append(title, pre);
+    }
+
+    $('status').textContent = 'Completed';
+  } catch (e) {
+    $('status').textContent = 'Error: ' + e.message;
+  } finally {
+    $('run').disabled = $('compare').disabled = false;
+  }
+}
+
+$('run').onclick = () => run([$('mode').value]);
+$('compare').onclick = () => run(['naive', 'hybrid', 'mix']);
+
+request('/api/questions')
+  .then(qs => qs.forEach(q => {
+    const b = document.createElement('button');
+    b.textContent = q.question;
+    b.onclick = () => {
+      $('q').value = q.question;
+    };
+    $('samples').append(b);
+  }))
+  .catch(e => {
+    $('status').textContent = e.message;
+  });
+</script>
+
+<script src="/graph.js"></script>
+</html>

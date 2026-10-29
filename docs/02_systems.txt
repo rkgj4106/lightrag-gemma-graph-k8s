@@ -1,0 +1,9 @@
+[Sample Test Document 2: Systems, Suppliers, and Supporting Services]
+
+All information in this document is fictional and intended for practice purposes.
+
+The supplier of Aurora ERP is Saebom Software. Aurora ERP uses the Order Database to store order data. The DBMS of the Order Database is MySQL. Aurora ERP uses Eunha Storage for file storage.
+
+The supplier of the Lumen Analytics Platform is Daon Data. The Lumen Analytics Platform uses the Analytics Database to store analytics data. The DBMS of the Analytics Database is PostgreSQL. The Lumen Analytics Platform also uses Eunha Storage for file storage.
+
+Eunha Storage is a common service shared by both systems. The Order Database and the Analytics Database are separate databases. This document describes the relationships between each system and its supplier, database, and shared service. It does not include information about project leads.

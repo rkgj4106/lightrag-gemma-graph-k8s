@@ -1,0 +1,123 @@
+# Single-node lab: change REPLACE_WITH_NODE_NAME and both image references.
+# Existing Ollama is reused; this manifest does not deploy a second Ollama.
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: lightrag-data
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: local-path
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: lightrag-config
+data:
+  OLLAMA_BASE_URL: "http://ollama.default.svc.cluster.local:11434"
+  LLM_MODEL: "gemma3:12b"
+  EMBED_MODEL: "bge-m3"
+  NUM_CTX: "16384"
+  OLLAMA_TIMEOUT: "900"
+  WORKING_DIR: "/data/rag_storage"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lightrag
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  progressDeadlineSeconds: 7200
+  selector:
+    matchLabels:
+      app: lightrag
+  template:
+    metadata:
+      labels:
+        app: lightrag
+    spec:
+      terminationGracePeriodSeconds: 120
+      # Only one writer may access this lab's file-backed index at a time.
+      initContainers:
+        - name: index-documents
+          image: yklee2002/lightrag-gemma-graph-k8s
+          imagePullPolicy: IfNotPresent
+          command: ["python", "app.py", "ingest"]
+          envFrom:
+            - configMapRef:
+                name: lightrag-config
+          volumeMounts:
+            - name: data
+              mountPath: /data
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "512Mi"
+            limits:
+              cpu: "2"
+              memory: "4Gi"
+      containers:
+        - name: lightrag
+          image: yklee2002/lightrag-gemma-graph-k8s
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8000
+          envFrom:
+            - configMapRef:
+                name: lightrag-config
+          volumeMounts:
+            - name: data
+              mountPath: /data
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "512Mi"
+            limits:
+              cpu: "2"
+              memory: "4Gi"
+          startupProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 120
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: http
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 6
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: lightrag-data
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: lightrag
+spec:
+  type: NodePort
+  selector:
+    app: lightrag
+  ports:
+    - name: http
+      port: 8000
+      targetPort: http
+      nodePort: 30125

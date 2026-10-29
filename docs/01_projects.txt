@@ -1,0 +1,9 @@
+[Sample Test Document 1: Projects and Project Leads]
+
+All companies, people, projects, and monetary amounts in this document are fictional and intended for practice purposes.
+
+Hanbit Distribution is carrying out the Next-Generation Order Management Project. The project lead is Kim Min-su. The project uses Aurora ERP. Kim Min-su belongs to the Information Strategy Team at Hanbit Distribution.
+
+Hanbit Distribution is also carrying out the Customer Analytics Project. The project lead is Park Ji-young. The project uses the Lumen Analytics Platform. Park Ji-young belongs to the Data Analytics Team at Hanbit Distribution.
+
+Lee Seo-jun is responsible for operations for the Next-Generation Order Management Project. Choi Yu-jin is responsible for operations for the Customer Analytics Project. The project lead and the operations manager are distinct roles.

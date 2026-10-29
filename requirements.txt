@@ -1,0 +1,6 @@
+lightrag-hku==1.5.7
+ollama>=0.4.8,<1
+python-dotenv>=1.0,<2
+httpx>=0.28,<1
+fastapi>=0.115,<1
+uvicorn>=0.34,<1

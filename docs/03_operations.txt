@@ -1,0 +1,11 @@
+[Sample Test Document 3: Contracts and Incident Response]
+
+All information in this document is fictional and intended for practice purposes.
+
+The technical support contact at Saebom Software is Jung Ha-neul. Saebom Software’s annual maintenance contract amount is KRW 24 million. The technical support contact at Daon Data is Yoon Ga-ram. Daon Data’s annual maintenance contract amount is KRW 18 million.
+
+Eunha Storage is operated by Pureun Cloud. The incident reporting contact for Eunha Storage is Kang Do-yoon. If an Eunha Storage outage occurs, the operations managers of all systems using it must be notified. Supplier technical support contacts and the storage incident reporting contact have distinct roles.
+
+The Order Database is backed up daily at 2:00 a.m. Its backup retention period is 30 days. The Analytics Database is backed up daily at 4:00 a.m. Its backup retention period is 90 days.
+
+Contract end dates, contact telephone numbers, and project budgets are not provided in this document.

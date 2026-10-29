@@ -1,0 +1,27 @@
+[
+  {
+    "question": "Who supplies the system used by the project led by Kim Min-su, and who is that supplier's technical support contact?",
+    "expected": "Next-Generation Order Management Project → Aurora ERP → Saebom Software → Jung Ha-neul",
+    "sources": ["01_projects.txt", "02_systems.txt", "03_operations.txt"]
+  },
+  {
+    "question": "Who supplies the system used by the project led by Park Ji-young, and what is the annual maintenance contract amount?",
+    "expected": "Customer Analytics Project → Lumen Analytics Platform → Daon Data, KRW 18 million per year",
+    "sources": ["01_projects.txt", "02_systems.txt", "03_operations.txt"]
+  },
+  {
+    "question": "If Eunha Storage experiences an outage, which projects are affected, and which operations manager for each project must be notified?",
+    "expected": "Next-Generation Order Management Project: Lee Seo-jun; Customer Analytics Project: Choi Yu-jin. Aurora ERP and the Lumen Analytics Platform share Eunha Storage.",
+    "sources": ["01_projects.txt", "02_systems.txt", "03_operations.txt"]
+  },
+  {
+    "question": "What are the DBMS, backup time, and backup retention period of the database used by the system in the project led by Kim Min-su?",
+    "expected": "Aurora ERP → Order Database, MySQL, daily at 2:00 a.m., 30 days",
+    "sources": ["01_projects.txt", "02_systems.txt", "03_operations.txt"]
+  },
+  {
+    "question": "What are Jung Ha-neul's telephone number and the contract end date for Saebom Software?",
+    "expected": "The answer must state that these details cannot be verified because they are not included in the provided documents.",
+    "sources": ["03_operations.txt"]
+  }
+]
