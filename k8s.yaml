@@ -18,7 +18,7 @@ kind: ConfigMap
 metadata:
   name: lightrag-config
 data:
-  OLLAMA_BASE_URL: "http://ollama.default.svc.cluster.local:11434"
+  OLLAMA_BASE_URL: "http://host.docker.internal:11434"
   LLM_MODEL: "gemma3:12b"
   EMBED_MODEL: "bge-m3"
   NUM_CTX: "16384"
@@ -61,7 +61,7 @@ spec:
               memory: "512Mi"
             limits:
               cpu: "2"
-              memory: "4Gi"
+              memory: "1Gi"
       containers:
         - name: lightrag
           image: yklee2002/lightrag-gemma-graph-k8s
@@ -81,7 +81,7 @@ spec:
               memory: "512Mi"
             limits:
               cpu: "2"
-              memory: "4Gi"
+              memory: "1Gi"
           startupProbe:
             httpGet:
               path: /healthz

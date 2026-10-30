@@ -21,7 +21,7 @@ from pydantic import BaseModel, Field
 
 ROOT = Path(__file__).resolve().parent
 load_dotenv(ROOT / ".env", override=False)
-HOST = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434").rstrip("/")
+HOST = os.getenv("OLLAMA_BASE_URL", "http://host.docker.internal:11434").rstrip("/")
 MODEL = os.getenv("LLM_MODEL", "gemma3:12b")
 EMBED = os.getenv("EMBED_MODEL", "bge-m3")
 CTX = int(os.getenv("NUM_CTX", "16384"))
